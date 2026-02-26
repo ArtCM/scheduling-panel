@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useAppointments } from '@/features/appointments/hooks/use-appointments'
 import { useAppointmentsStore } from '@/features/appointments/store/appointments.store'
 import { Calendar } from 'lucide-react'
 import { AppointmentCard } from './appointment-card'
@@ -9,17 +8,15 @@ import { AppointmentDetailsModal } from './appointment-details-modal'
 import { TIME_SLOTS } from '@/lib/constants'
 import type { Appointment } from '@/features/appointments/types/appointment.types'
 
-export function AgendaGrid() {
-  const { appointmentsBySlot } = useAppointments()
-  const removeAppointment = useAppointmentsStore((state) => state.removeAppointment)
+interface AgendaGridProps {
+  selectedDate: string
+}
+
+export function AgendaGrid({ selectedDate }: AgendaGridProps) {
   const appointments = useAppointmentsStore((state) => state.appointments)
+  const removeAppointment = useAppointmentsStore((state) => state.removeAppointment)
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
-
-  console.log('=== AGENDA GRID DEBUG ===')
-  console.log('Total appointments:', appointments.length)
-  console.log('All appointments:', appointments)
-  console.log('Appointments by slot:', appointmentsBySlot)
 
   const handleAppointmentClick = (appointment: Appointment) => {
     setSelectedAppointment(appointment)
@@ -31,14 +28,14 @@ export function AgendaGrid() {
     setDetailsOpen(false)
   }
 
-  const approvedAppointmentsBySlot = Object.entries(appointmentsBySlot).reduce((acc, [time, apts]) => {
-    const approved = apts.filter((apt: Appointment) => apt.status === 'approved')
-    console.log(`Time ${time}: ${apts.length} total, ${approved.length} approved`)
-    acc[time] = approved
+  const dayAppointments = appointments.filter(
+    apt => apt.date === selectedDate && apt.status === 'approved'
+  )
+
+  const appointmentsBySlot = TIME_SLOTS.reduce((acc, time) => {
+    acc[time] = dayAppointments.filter(apt => apt.time === time)
     return acc
   }, {} as Record<string, Appointment[]>)
-
-  console.log('Approved by slot:', approvedAppointmentsBySlot)
 
   return (
     <>
@@ -50,8 +47,8 @@ export function AgendaGrid() {
               {time}
             </div>
             <div className="space-y-2">
-              {approvedAppointmentsBySlot[time]?.length > 0 ? (
-                approvedAppointmentsBySlot[time].map((appointment) => (
+              {appointmentsBySlot[time]?.length > 0 ? (
+                appointmentsBySlot[time].map((appointment) => (
                   <AppointmentCard
                     key={appointment.id}
                     appointment={appointment}
@@ -75,6 +72,7 @@ export function AgendaGrid() {
     </>
   )
 }
+
 
 
 

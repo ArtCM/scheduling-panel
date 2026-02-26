@@ -1,4 +1,4 @@
-export type AppointmentStatus = 'pending' | 'approved' | 'rejected' | 'cancelled'
+export type AppointmentStatus = 'pending' | 'approved' | 'rejected' | 'cancelled' | 'completed'
 
 export interface Appointment {
   id: string
@@ -21,6 +21,7 @@ export interface CreateAppointmentInput {
   description?: string
   status?: 'pending' | 'approved'
 }
+
 
 
 

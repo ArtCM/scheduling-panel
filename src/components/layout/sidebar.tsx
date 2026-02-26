@@ -9,6 +9,7 @@ import { Logo } from './logo'
 const navigation = [
   { name: 'Dashboard', href: '/', icon: Home },
   { name: 'Agenda', href: '/agenda', icon: Calendar },
+  { name: 'Agendamentos', href: '/agendamentos', icon: CheckCircle },
   { name: 'Solicitações', href: '/solicitacoes', icon: CheckCircle },
   { name: 'Clientes', href: '/clientes', icon: Users },
   { name: 'Configurações', href: '#', icon: Settings, disabled: true },
@@ -76,6 +77,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     </aside>
   )
 }
+
+
 
 
 
