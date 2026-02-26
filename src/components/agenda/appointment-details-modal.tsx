@@ -199,7 +199,7 @@ export function AppointmentDetailsModal({
                     <div className="flex-1">
                       <p className="text-sm font-medium text-muted-foreground">Data</p>
                       <p className="text-base">
-                        {format(new Date(appointment.date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                        {format(parseISO(appointment.date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
                       </p>
                     </div>
                   </div>
@@ -306,6 +306,7 @@ export function AppointmentDetailsModal({
     </>
   )
 }
+
 
 
 
