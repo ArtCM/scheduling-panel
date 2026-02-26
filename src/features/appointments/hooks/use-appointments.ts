@@ -5,6 +5,8 @@ export function useAppointments() {
   const { appointments, addAppointment, removeAppointment, getAppointmentsByTime } = 
     useAppointmentsStore()
 
+  console.log('Total appointments:', appointments.length)
+
   const appointmentsBySlot = TIME_SLOTS.reduce((acc, time) => {
     acc[time] = getAppointmentsByTime(time)
     return acc
@@ -17,3 +19,4 @@ export function useAppointments() {
     removeAppointment,
   }
 }
+

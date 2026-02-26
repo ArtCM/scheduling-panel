@@ -14,15 +14,18 @@ import { appointmentSchema, type AppointmentFormData } from '@/features/appointm
 import { TIME_SLOTS, DURATION_OPTIONS } from '@/lib/constants'
 import { useAppointmentsStore } from '@/features/appointments/store/appointments.store'
 import { parseISO } from 'date-fns'
+import { useAppointmentNotifications } from '@/features/appointments/hooks/use-appointment-notifications'
 
 interface CreateAppointmentModalProps {
-  onSubmit: (data: AppointmentFormData) => void
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
-export function CreateAppointmentModal({ onSubmit }: CreateAppointmentModalProps) {
-  const [open, setOpen] = useState(false)
+export function CreateAppointmentModal({ open, onOpenChange }: CreateAppointmentModalProps) {
+  const addAppointment = useAppointmentsStore((state) => state.addAppointment)
   const isTimeSlotAvailable = useAppointmentsStore((state) => state.isTimeSlotAvailable)
-  
+  const { notifyNewAppointment } = useAppointmentNotifications()
+
   const form = useForm<AppointmentFormData>({
     resolver: zodResolver(appointmentSchema),
     defaultValues: {
@@ -52,17 +55,19 @@ export function CreateAppointmentModal({ onSubmit }: CreateAppointmentModalProps
       return
     }
 
-    if (!isTimeSlotAvailable(data.date, data.time)) {
-      form.setError('time', {
-        type: 'manual',
-        message: 'Já existe um agendamento neste horário'
-      })
-      return
-    }
+    addAppointment(data)
     
-    onSubmit(data)
+    const newAppointment = {
+      ...data,
+      id: crypto.randomUUID(),
+      status: 'pending' as const,
+    }
+    notifyNewAppointment(newAppointment)
+    
     form.reset()
-    setOpen(false)
+    if (onOpenChange) {
+      onOpenChange(false)
+    }
   }
 
   const isTimeSlotPast = (time: string) => {
@@ -80,7 +85,7 @@ export function CreateAppointmentModal({ onSubmit }: CreateAppointmentModalProps
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <Button className="gap-2">
           <Plus className="h-4 w-4" />
@@ -217,7 +222,7 @@ export function CreateAppointmentModal({ onSubmit }: CreateAppointmentModalProps
             />
 
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancelar
               </Button>
               <Button type="submit">Criar Agendamento</Button>
@@ -228,6 +233,12 @@ export function CreateAppointmentModal({ onSubmit }: CreateAppointmentModalProps
     </Dialog>
   )
 }
+
+
+
+
+
+
 
 
 

@@ -6,6 +6,7 @@ import { Calendar, Clock, Check, X } from 'lucide-react'
 import { useAppointmentsStore } from '@/features/appointments/store/appointments.store'
 import { format, parseISO } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { useAppointmentNotifications } from '@/features/appointments/hooks/use-appointment-notifications'
 
 interface PendingAppointmentsModalProps {
   open: boolean
@@ -16,8 +17,14 @@ export function PendingAppointmentsModal({ open, onOpenChange }: PendingAppointm
   const getPendingAppointments = useAppointmentsStore((state) => state.getPendingAppointments)
   const approveAppointment = useAppointmentsStore((state) => state.approveAppointment)
   const rejectAppointment = useAppointmentsStore((state) => state.rejectAppointment)
+  const { notifyApproval } = useAppointmentNotifications()
   
   const pending = getPendingAppointments()
+
+  const handleApprove = (apt: any) => {
+    approveAppointment(apt.id)
+    notifyApproval(apt)
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -50,7 +57,7 @@ export function PendingAppointmentsModal({ open, onOpenChange }: PendingAppointm
                   <Button 
                     size="sm" 
                     variant="default"
-                    onClick={() => approveAppointment(apt.id)}
+                    onClick={() => handleApprove(apt)}
                     className="gap-1"
                   >
                     <Check className="h-4 w-4" />
@@ -76,3 +83,4 @@ export function PendingAppointmentsModal({ open, onOpenChange }: PendingAppointm
     </Dialog>
   )
 }
+

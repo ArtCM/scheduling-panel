@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import { Bell, Menu, Moon, Sun, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,18 +13,31 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useTheme } from 'next-themes';
 import { Badge } from '@/components/ui/badge';
+import { useNotificationsStore } from '@/features/notifications/store/notifications.store'
+import { formatDistanceToNow } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
+import { useEffect, useState } from 'react';
 
 interface HeaderProps {
-  onToggleSidebar?: () => void;
+  onMenuClick?: () => void;
 }
 
-export function Header({ onToggleSidebar }: HeaderProps) {
+export function Header({ onMenuClick }: HeaderProps) {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  const notifications = useNotificationsStore((state) => state.notifications)
+  const unreadCount = useNotificationsStore((state) => state.getUnreadCount())
+  const markAsRead = useNotificationsStore((state) => state.markAsRead)
+  const removeNotification = useNotificationsStore((state) => state.removeNotification)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="flex h-16 items-center justify-between px-6">
-        <Button variant="ghost" size="icon" onClick={onToggleSidebar}>
+        <Button variant="ghost" size="icon" onClick={onMenuClick}>
           <Menu className="h-5 w-5" />
         </Button>
 
@@ -46,126 +59,62 @@ export function Header({ onToggleSidebar }: HeaderProps) {
             <DropdownMenuTrigger asChild suppressHydrationWarning>
               <Button variant="ghost" size="icon" className="relative">
                 <Bell className="h-5 w-5" />
-                <Badge
-                  variant="destructive"
-                  className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
-                >
-                  3
-                </Badge>
+                {mounted && unreadCount > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+                  >
+                    {unreadCount}
+                  </Badge>
+                )}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-96">
-              <DropdownMenuLabel className="flex items-center justify-between">
-                <span>Notificações</span>
-                <Badge variant="secondary" className="ml-2">
-                  3
-                </Badge>
-              </DropdownMenuLabel>
+            <DropdownMenuContent align="end" className="w-80">
+              <DropdownMenuLabel>Notificações ({unreadCount})</DropdownMenuLabel>
               <DropdownMenuSeparator />
-
-              <DropdownMenuItem
-                className="cursor-pointer hover:bg-accent p-0"
-                onSelect={(e) => e.preventDefault()}
-              >
-                <div className="flex items-start gap-3 p-3 w-full group">
-                  <div
-                    className="flex-1 flex items-center justify-between"
-                    onClick={() => {
-                      /* TODO: abrir modal */
-                    }}
-                  >
-                    <div className="flex flex-col items-start justify-start mb-1">
-                      <p className="text-sm font-medium">Novo agendamento</p>
-                      <p className="text-xs text-muted-foreground">
-                        João Silva agendou para hoje às 14h
-                      </p>
-                    </div>
-                    <span className="text-xs text-muted-foreground">14:30</span>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // TODO: remover notificação
-                    }}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
+              
+              {notifications.length === 0 ? (
+                <div className="p-4 text-center text-sm text-muted-foreground">
+                  Nenhuma notificação
                 </div>
-              </DropdownMenuItem>
-
-              <DropdownMenuItem
-                className="cursor-pointer hover:bg-accent p-0"
-                onSelect={(e) => e.preventDefault()}
-              >
-                <div className="flex items-start gap-3 p-3 w-full group">
-                  <div
-                    className="flex-1 flex items-center justify-between"
-                    onClick={() => {
-                      /* TODO: abrir modal */
-                    }}
+              ) : (
+                notifications.map((notification) => (
+                  <DropdownMenuItem
+                    key={notification.id}
+                    className="cursor-pointer hover:bg-accent p-0"
+                    onSelect={(e) => e.preventDefault()}
                   >
-                    <div className="flex flex-col items-start justify-start mb-1">
-                      <p className="text-sm font-medium">Cancelamento</p>
-                      <p className="text-xs text-muted-foreground">
-                        Maria Santos cancelou o agendamento
-                      </p>
+                    <div className="flex items-start gap-3 p-3 w-full group">
+                      <div
+                        className="flex-1"
+                        onClick={() => markAsRead(notification.id)}
+                      >
+                        <p className="text-sm font-medium">{notification.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {notification.message}
+                        </p>
+                        <span className="text-xs text-muted-foreground">
+                          {formatDistanceToNow(new Date(notification.timestamp), {
+                            addSuffix: true,
+                            locale: ptBR,
+                          })}
+                        </span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 opacity-0 group-hover:opacity-100"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          removeNotification(notification.id)
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
                     </div>
-                    <span className="text-xs text-muted-foreground">12:15</span>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // TODO: remover notificação
-                    }}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </div>
-              </DropdownMenuItem>
-
-              <DropdownMenuItem
-                className="cursor-pointer hover:bg-accent p-0"
-                onSelect={(e) => e.preventDefault()}
-              >
-                <div className="flex items-start gap-3 p-3 w-full group">
-                  <div
-                    className="flex-1 flex items-center justify-between"
-                    onClick={() => {
-                      /* TODO: abrir modal */
-                    }}
-                  >
-                    <div className="flex flex-col items-start justify-start mb-1">
-                      <p className="text-sm font-medium">Lembrete</p>
-                      <p className="text-xs text-muted-foreground">
-                        Você tem 5 agendamentos amanhã
-                      </p>
-                    </div>
-                    <span className="text-xs text-muted-foreground">09:00</span>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // TODO: remover notificação
-                    }}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </div>
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer hover:bg-accent text-center justify-center text-sm text-primary">
-                Ver todas as notificações
-              </DropdownMenuItem>
+                  </DropdownMenuItem>
+                ))
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -204,6 +153,9 @@ export function Header({ onToggleSidebar }: HeaderProps) {
     </header>
   );
 }
+
+
+
 
 
 

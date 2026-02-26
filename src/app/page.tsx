@@ -1,42 +1,36 @@
 'use client'
 
-import { useSyncExternalStore } from 'react'
+import { UpcomingAppointments } from '@/components/dashboard/upcoming-appointments'
 import { StatsCard } from '@/components/dashboard/stats-card'
 import { QuickActions } from '@/components/dashboard/quick-actions'
-import { UpcomingAppointments } from '@/components/dashboard/upcoming-appointments'
 import { Calendar, Users, Clock} from 'lucide-react'
-import { useAppointmentsStore } from '@/features/appointments/store/appointments.store'
+import { useAppointments } from '@/features/appointments/hooks/use-appointments'
 
 export default function Home() {
-  const mounted = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false
-  )
+  const { appointments } = useAppointments()
+  
+  const today = new Date().toISOString().split('T')[0]
 
-  const todayAppointments = useAppointmentsStore((state) => state.getTodayAppointments())
-  const monthAppointments = useAppointmentsStore((state) => state.getMonthAppointments())
-  const totalClients = useAppointmentsStore((state) => state.getTotalClients())
-  const avgDuration = useAppointmentsStore((state) => state.getAverageAppointmentDuration())
+  const todayAppointments = appointments.filter(apt => {
+    console.log('Comparando:', { aptDate: apt.date, today, match: apt.date === today })
+    return apt.date === today
+  }).length
 
-  if (!mounted) {
-    return (
-      <div className="p-8 space-y-8">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <StatsCard title="Agendamentos Hoje" value={0} icon={Calendar} />
-          <StatsCard title="Total de Clientes" value={0} icon={Users} />
-          <StatsCard title="Agendamentos do Mês" value={0} icon={Calendar} />
-          <StatsCard title="Tempo Médio" value="45min" icon={Clock} />
-        </div>
-        <QuickActions />
-        <UpcomingAppointments />
-      </div>
-    )
-  }
+  const monthAppointments = appointments.filter(apt => {
+    const date = new Date(apt.date)
+    const now = new Date()
+    return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()
+  }).length
+
+  const totalClients = new Set(appointments.map(apt => apt.patientName)).size
+
+  const avgDuration = appointments.length > 0
+    ? Math.round(appointments.reduce((sum, apt) => sum + apt.duration, 0) / appointments.length)
+    : 45
 
   return (
     <div className="p-8 space-y-8">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard 
           title="Agendamentos Hoje" 
           value={todayAppointments} 
@@ -58,11 +52,17 @@ export default function Home() {
           icon={Clock}
         />
       </div>
-      <QuickActions />
-      <UpcomingAppointments />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <UpcomingAppointments />
+        </div>
+        <QuickActions />
+      </div>
     </div>
   )
 }
+
 
 
 

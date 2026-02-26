@@ -1,3 +1,5 @@
+export type AppointmentStatus = 'pending' | 'approved' | 'rejected' | 'cancelled'
+
 export interface Appointment {
   id: string
   title: string
@@ -5,8 +7,8 @@ export interface Appointment {
   date: string
   time: string
   duration: number
+  status: AppointmentStatus
   description?: string
-  status: 'pending' | 'approved' | 'rejected'
   createdAt: Date
 }
 
@@ -19,5 +21,6 @@ export interface CreateAppointmentInput {
   description?: string
   status?: 'pending' | 'approved'
 }
+
 
 

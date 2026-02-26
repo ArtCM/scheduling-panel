@@ -12,7 +12,7 @@ interface AppointmentCardProps {
 export function AppointmentCard({ appointment, onClick }: AppointmentCardProps) {
   return (
     <Card 
-      className="p-3 border-l-4 border-l-primary cursor-pointer hover:bg-accent/50 transition-colors"
+      className="p-3 border-l-4 hover:shadow-md transition-shadow cursor-pointer"
       onClick={onClick}
     >
       <div className="flex items-start justify-between gap-2">
@@ -31,4 +31,7 @@ export function AppointmentCard({ appointment, onClick }: AppointmentCardProps) 
     </Card>
   )
 }
+
+
+
 
