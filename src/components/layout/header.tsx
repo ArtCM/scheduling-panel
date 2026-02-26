@@ -17,7 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { useNotificationsStore } from '@/features/notifications/store/notifications.store'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { useEffect, useState } from 'react';
+import { useFeatureToast } from '@/hooks/use-feature-toast'
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -25,19 +25,14 @@ interface HeaderProps {
 
 export function Header({ onMenuClick }: HeaderProps) {
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
   const notifications = useNotificationsStore((state) => state.notifications)
   const unreadCount = useNotificationsStore((state) => state.getUnreadCount())
   const markAsRead = useNotificationsStore((state) => state.markAsRead)
   const dismissNotification = useNotificationsStore((state) => state.dismissNotification)
   const markAllAsRead = useNotificationsStore((state) => state.markAllAsRead)
+  const { showFeatureNotAvailable } = useFeatureToast()
 
-  // Mostrar apenas não lidas no dropdown
   const unreadNotifications = notifications.filter(n => !n.read).slice(0, 5)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
@@ -64,7 +59,7 @@ export function Header({ onMenuClick }: HeaderProps) {
             <DropdownMenuTrigger asChild suppressHydrationWarning>
               <Button variant="ghost" size="icon" className="relative">
                 <Bell className="h-5 w-5" />
-                {mounted && unreadCount > 0 && (
+                {unreadCount > 0 && (
                   <Badge
                     variant="destructive"
                     className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
@@ -144,11 +139,7 @@ export function Header({ onMenuClick }: HeaderProps) {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild suppressHydrationWarning>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative rounded-full"
-              >
+              <Button variant="ghost" size="icon" className="relative rounded-full">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src="/avatar.png" alt="Usuário" />
                   <AvatarFallback className="bg-primary text-primary-foreground">
@@ -160,14 +151,23 @@ export function Header({ onMenuClick }: HeaderProps) {
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer hover:bg-accent">
+              <DropdownMenuItem 
+                className="cursor-pointer hover:bg-accent"
+                onClick={showFeatureNotAvailable}
+              >
                 Perfil
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer hover:bg-accent">
+              <DropdownMenuItem 
+                className="cursor-pointer hover:bg-accent"
+                onClick={showFeatureNotAvailable}
+              >
                 Configurações
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive cursor-pointer hover:bg-accent">
+              <DropdownMenuItem 
+                className="text-destructive cursor-pointer hover:bg-accent"
+                onClick={showFeatureNotAvailable}
+              >
                 Sair
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -177,6 +177,9 @@ export function Header({ onMenuClick }: HeaderProps) {
     </header>
   );
 }
+
+
+
 
 
 

@@ -7,6 +7,7 @@ import { Header } from "@/components/layout/header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { useState } from "react";
 import { StoreProvider } from "@/components/providers/store-provider";
+import { Toaster } from '@/components/ui/sonner'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +31,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <StoreProvider>
+            <Toaster />
             <div className="flex">
               <div className={`hidden md:block transition-all duration-300 ease-in-out ${sidebarOpen ? 'w-64' : 'w-0'}`}>
                 <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
@@ -50,6 +52,7 @@ export default function RootLayout({
     </html>
   );
 }
+
 
 
 
