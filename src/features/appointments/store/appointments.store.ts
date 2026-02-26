@@ -64,8 +64,6 @@ export const useAppointmentsStore = create<AppointmentsState>()(
             apt.id === id ? { ...apt, status: 'approved' as const } : apt,
           ),
         }));
-
-        // NÃO DEVE TER: useNotificationsStore.getState().addNotification(...)
       },
 
       rejectAppointment: (id) => {

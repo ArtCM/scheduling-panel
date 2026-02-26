@@ -1,12 +1,10 @@
-'use client'
-
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, Calendar, Users, Settings, CheckCircle, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { useFeatureToast } from '@/hooks/use-feature-toast'
+import { Logo } from './logo'
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: Home },
@@ -50,12 +48,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           >
             <X className="h-5 w-5" />
           </Button>
-          <Image 
-            src="/logo.png" 
-            alt="Logo" 
-            width={200} 
-            height={50}
-          />
+          <Logo />
         </div>
         
         <nav className="space-y-2 flex-1">
@@ -83,6 +76,9 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     </aside>
   )
 }
+
+
+
 
 
 
