@@ -25,6 +25,7 @@ export function CreateAppointmentModal({ onSubmit }: CreateAppointmentModalProps
     defaultValues: {
       title: '',
       patientName: '',
+      date: new Date().toISOString().split('T')[0],
       time: '',
       duration: 30,
       description: '',
@@ -148,6 +149,20 @@ export function CreateAppointmentModal({ onSubmit }: CreateAppointmentModalProps
               )}
             />
 
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Data</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancelar
@@ -160,3 +175,4 @@ export function CreateAppointmentModal({ onSubmit }: CreateAppointmentModalProps
     </Dialog>
   )
 }
+

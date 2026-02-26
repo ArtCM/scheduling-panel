@@ -2,6 +2,7 @@ export interface Appointment {
   id: string
   title: string
   patientName: string
+  date: string
   time: string
   duration: number
   description?: string
@@ -9,3 +10,4 @@ export interface Appointment {
 }
 
 export type CreateAppointmentInput = Omit<Appointment, 'id' | 'createdAt'>
+
