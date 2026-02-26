@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Calendar, Users, Settings, BarChart3, X } from 'lucide-react'
+import { Home, Calendar, Users, Settings, CheckCircle, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
@@ -10,8 +10,8 @@ import { Button } from '@/components/ui/button'
 const navigation = [
   { name: 'Dashboard', href: '/', icon: Home },
   { name: 'Agenda', href: '/agenda', icon: Calendar },
+  { name: 'Solicitações', href: '/solicitacoes', icon: CheckCircle },
   { name: 'Clientes', href: '/clientes', icon: Users },
-  { name: 'Relatórios', href: '/relatorios', icon: BarChart3 },
   { name: 'Configurações', href: '/configuracoes', icon: Settings },
 ]
 
@@ -73,6 +73,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     </aside>
   )
 }
+
+
 
 
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -12,6 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { appointmentSchema, type AppointmentFormData } from '@/features/appointments/schemas/appointment.schema'
 import { TIME_SLOTS, DURATION_OPTIONS } from '@/lib/constants'
+import { useAppointmentsStore } from '@/features/appointments/store/appointments.store'
+import { parseISO } from 'date-fns'
 
 interface CreateAppointmentModalProps {
   onSubmit: (data: AppointmentFormData) => void
@@ -19,6 +21,7 @@ interface CreateAppointmentModalProps {
 
 export function CreateAppointmentModal({ onSubmit }: CreateAppointmentModalProps) {
   const [open, setOpen] = useState(false)
+  const isTimeSlotAvailable = useAppointmentsStore((state) => state.isTimeSlotAvailable)
   
   const form = useForm<AppointmentFormData>({
     resolver: zodResolver(appointmentSchema),
@@ -32,10 +35,48 @@ export function CreateAppointmentModal({ onSubmit }: CreateAppointmentModalProps
     },
   })
 
+  const selectedDate = useWatch({ control: form.control, name: 'date' })
+
   const handleSubmit = (data: AppointmentFormData) => {
+    const [hours, minutes] = data.time.split(':').map(Number)
+    const appointmentDateTime = parseISO(data.date)
+    appointmentDateTime.setHours(hours, minutes, 0, 0)
+    
+    const now = new Date()
+    
+    if (appointmentDateTime <= now) {
+      form.setError('time', {
+        type: 'manual',
+        message: 'Não é possível agendar para data/horário passado'
+      })
+      return
+    }
+
+    if (!isTimeSlotAvailable(data.date, data.time)) {
+      form.setError('time', {
+        type: 'manual',
+        message: 'Já existe um agendamento neste horário'
+      })
+      return
+    }
+    
     onSubmit(data)
     form.reset()
     setOpen(false)
+  }
+
+  const isTimeSlotPast = (time: string) => {
+    if (!selectedDate) return false
+    
+    const [hours, minutes] = time.split(':').map(Number)
+    const slotDateTime = parseISO(selectedDate)
+    slotDateTime.setHours(hours, minutes, 0, 0)
+    
+    const now = new Date()
+    
+    console.log('Slot:', slotDateTime, 'Now:', now, 'IsPast:', slotDateTime <= now)
+    
+    return slotDateTime <= now
   }
 
   return (
@@ -94,11 +135,19 @@ export function CreateAppointmentModal({ onSubmit }: CreateAppointmentModalProps
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {TIME_SLOTS.map((time) => (
-                          <SelectItem key={time} value={time}>
-                            {time}
-                          </SelectItem>
-                        ))}
+                        {TIME_SLOTS.map((time) => {
+                          const isAvailable = isTimeSlotAvailable(selectedDate, time)
+                          const isPast = isTimeSlotPast(time)
+                          return (
+                            <SelectItem 
+                              key={time} 
+                              value={time}
+                              disabled={!isAvailable || isPast}
+                            >
+                              {time} {isPast ? '(Passado)' : !isAvailable ? '(Ocupado)' : ''}
+                            </SelectItem>
+                          )
+                        })}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -156,7 +205,11 @@ export function CreateAppointmentModal({ onSubmit }: CreateAppointmentModalProps
                 <FormItem>
                   <FormLabel>Data</FormLabel>
                   <FormControl>
-                    <Input type="date" {...field} />
+                    <Input 
+                      type="date" 
+                      {...field}
+                      min={new Date().toISOString().split('T')[0]}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -175,4 +228,18 @@ export function CreateAppointmentModal({ onSubmit }: CreateAppointmentModalProps
     </Dialog>
   )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
