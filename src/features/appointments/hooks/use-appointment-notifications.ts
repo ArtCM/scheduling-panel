@@ -12,9 +12,9 @@ export function useAppointmentNotifications() {
   return {
     notifyNewAppointment: (appointment: AppointmentNotification) => {
       addNotification({
-        type: 'request',
-        title: 'Nova Solicitação',
-        message: `${appointment.patientName} solicitou agendamento para ${appointment.time}`,
+        type: 'appointment',
+        title: 'Novo Agendamento',
+        message: `Agendamento de ${appointment.patientName} criado para ${appointment.time}`,
         appointmentId: appointment.id,
       })
     },
@@ -36,3 +36,5 @@ export function useAppointmentNotifications() {
     },
   }
 }
+
+

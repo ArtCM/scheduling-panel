@@ -1,6 +1,7 @@
 'use client'
 
-import { Bell, Menu, Moon, Sun, X } from 'lucide-react';
+import { Bell, Menu, Moon, Sun, X } from 'lucide-react'
+import Link from 'next/link'
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -28,7 +29,11 @@ export function Header({ onMenuClick }: HeaderProps) {
   const notifications = useNotificationsStore((state) => state.notifications)
   const unreadCount = useNotificationsStore((state) => state.getUnreadCount())
   const markAsRead = useNotificationsStore((state) => state.markAsRead)
-  const removeNotification = useNotificationsStore((state) => state.removeNotification)
+  const dismissNotification = useNotificationsStore((state) => state.dismissNotification)
+  const markAllAsRead = useNotificationsStore((state) => state.markAllAsRead)
+
+  // Mostrar apenas não lidas no dropdown
+  const unreadNotifications = notifications.filter(n => !n.read).slice(0, 5)
 
   useEffect(() => {
     setMounted(true)
@@ -70,15 +75,27 @@ export function Header({ onMenuClick }: HeaderProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-80">
-              <DropdownMenuLabel>Notificações ({unreadCount})</DropdownMenuLabel>
+              <DropdownMenuLabel className="flex items-center justify-between">
+                <span>Notificações ({unreadCount})</span>
+                {unreadCount > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-auto p-1 text-xs"
+                    onClick={markAllAsRead}
+                  >
+                    Marcar todas como lidas
+                  </Button>
+                )}
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
               
-              {notifications.length === 0 ? (
+              {unreadNotifications.length === 0 ? (
                 <div className="p-4 text-center text-sm text-muted-foreground">
-                  Nenhuma notificação
+                  Nenhuma notificação nova
                 </div>
               ) : (
-                notifications.map((notification) => (
+                unreadNotifications.map((notification) => (
                   <DropdownMenuItem
                     key={notification.id}
                     className="cursor-pointer hover:bg-accent p-0"
@@ -106,7 +123,7 @@ export function Header({ onMenuClick }: HeaderProps) {
                         className="h-6 w-6 opacity-0 group-hover:opacity-100"
                         onClick={(e) => {
                           e.stopPropagation()
-                          removeNotification(notification.id)
+                          dismissNotification(notification.id)
                         }}
                       >
                         <X className="h-4 w-4" />
@@ -115,6 +132,13 @@ export function Header({ onMenuClick }: HeaderProps) {
                   </DropdownMenuItem>
                 ))
               )}
+              
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href="/notificacoes" className="w-full text-center cursor-pointer">
+                  Ver todas as notificações
+                </Link>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -153,6 +177,10 @@ export function Header({ onMenuClick }: HeaderProps) {
     </header>
   );
 }
+
+
+
+
 
 
 

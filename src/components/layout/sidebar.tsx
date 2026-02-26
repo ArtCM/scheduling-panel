@@ -30,7 +30,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       isOpen ? "translate-x-0" : "-translate-x-full"
     )}>
       <div className="p-6 h-full flex flex-col">
-        <div className="mb-8 flex items-center justify-center flex-col relative">
+        <div className="flex items-center justify-center flex-col relative">
           <Button
             variant="ghost"
             size="icon"
@@ -42,10 +42,9 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           <Image 
             src="/logo.png" 
             alt="Logo" 
-            width={100} 
-            height={30}
+            width={200} 
+            height={50}
           />
-          <p className="text-sm text-muted-foreground mt-2">Sistema de Agendamentos</p>
         </div>
         
         <nav className="space-y-2 flex-1">

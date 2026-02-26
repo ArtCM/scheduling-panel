@@ -18,6 +18,7 @@ interface NotificationsState {
   addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void
   markAsRead: (id: string) => void
   markAllAsRead: () => void
+  dismissNotification: (id: string) => void
   removeNotification: (id: string) => void
   getUnreadCount: () => number
   getUnreadNotifications: () => Notification[]
@@ -55,6 +56,14 @@ export const useNotificationsStore = create<NotificationsState>()(
         }))
       },
 
+      dismissNotification: (id) => {
+        set((state) => ({
+          notifications: state.notifications.map((n) =>
+            n.id === id ? { ...n, read: true } : n
+          ),
+        }))
+      },
+
       removeNotification: (id) => {
         set((state) => ({
           notifications: state.notifications.filter((n) => n.id !== id),
@@ -74,3 +83,4 @@ export const useNotificationsStore = create<NotificationsState>()(
     }
   )
 )
+
