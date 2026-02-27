@@ -1,17 +1,17 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Calendar, Users, Settings, CheckCircle, X } from 'lucide-react'
+import { Home, Calendar, Users, Settings, CheckCircle, X, ClipboardList } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useFeatureToast } from '@/hooks/use-feature-toast'
 import { Logo } from './logo'
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: Home },
-  { name: 'Agenda', href: '/agenda', icon: Calendar },
-  { name: 'Agendamentos', href: '/agendamentos', icon: CheckCircle },
-  { name: 'Solicitações', href: '/solicitacoes', icon: CheckCircle },
-  { name: 'Clientes', href: '/clientes', icon: Users },
+  { name: 'Dashboard', href: '/dashboard', icon: Home },
+  { name: 'Agenda', href: '/dashboard/agenda', icon: Calendar },
+  { name: 'Agendamentos', href: '/dashboard/agendamentos', icon: ClipboardList },
+  { name: 'Solicitações', href: '/dashboard/solicitacoes', icon: CheckCircle },
+  { name: 'Clientes', href: '/dashboard/clientes', icon: Users },
   { name: 'Configurações', href: '#', icon: Settings, disabled: true },
 ]
 
@@ -77,6 +77,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     </aside>
   )
 }
+
+
 
 
 

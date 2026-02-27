@@ -36,7 +36,7 @@ export const useAppointmentsStore = create<AppointmentsState>()(
         const newAppointment: Appointment = {
           ...appointment,
           id: crypto.randomUUID(),
-          status: 'approved',
+          status: appointment.status || 'approved',
           createdAt: new Date()
         }
         set((state) => ({
@@ -159,6 +159,8 @@ export const useAppointmentsStore = create<AppointmentsState>()(
     },
   ),
 );
+
+
 
 
 

@@ -16,19 +16,19 @@ export function QuickActions() {
         <h2 className="text-xl font-semibold mb-4">Ações Rápidas</h2>
         <div className="space-y-3">
           <Button asChild className="w-full justify-start" variant="outline">
-            <Link href="/agenda">
+            <Link href="/dashboard/agenda">
               <Calendar className="h-4 w-4 mr-2" />
               Ver Agenda Completa
             </Link>
           </Button>
           <Button asChild className="w-full justify-start" variant="outline">
-            <a href="https://seu-link-de-agendamento.com" target="_blank" rel="noopener noreferrer">
+            <a href="/portal" target="_blank" rel="noopener noreferrer">
               <ExternalLink className="h-4 w-4 mr-2" />
               Portal de Agendamento Público
             </a>
           </Button>
           <Button asChild className="w-full justify-start" variant="outline">
-            <Link href="/clientes">
+            <Link href="/dashboard/clientes">
               <Users className="h-4 w-4 mr-2" />
               Gerenciar Clientes
             </Link>
@@ -51,4 +51,6 @@ export function QuickActions() {
     </>
   )
 }
+
+
 
