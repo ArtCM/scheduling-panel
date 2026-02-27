@@ -18,7 +18,7 @@ Sistema completo de gerenciamento de agendamentos com painel administrativo e po
 
 ## 🎥 Demonstração
 
-- **Ambiente de Homologação**: [Em breve]
+- **Ambiente de Homologação**: [Clique aqui](https://scheduling-panel.vercel.app/dashboard)
 
 ![Screenshot do Sistema](/preview.png)
 
