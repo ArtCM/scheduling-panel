@@ -130,7 +130,7 @@ export function Header({ onMenuClick }: HeaderProps) {
               
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/notificacoes" className="w-full text-center cursor-pointer">
+                <Link href="/dashboard/notificacoes" className="w-full text-center cursor-pointer">
                   Ver todas as notificações
                 </Link>
               </DropdownMenuItem>
